@@ -2,6 +2,8 @@ import requests
 from datetime import datetime
 
 from PyQt5 import uic, QtCore
+from PyQt5.QtCore import QSize
+from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QMainWindow
 import main
 
@@ -20,6 +22,8 @@ class Chat(QMainWindow):
         self.timer = QtCore.QTimer()
         self.timer.timeout.connect(self.get_mess)
         self.timer.start(1000)
+        self.pushButton_2.setIcon(QIcon('Снимок.PNG'))
+        self.pushButton_2.setIconSize(QSize(300, 300))
 
     def send(self):
         self.messege = self.textEdit_2.toPlainText()
