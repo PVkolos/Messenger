@@ -8,6 +8,7 @@ class Messengers:
         self.lis = [nickname_one, nickname_two]
 
     def newchat(self):
+        """  добавление нового личного чата в БД сервера  """
         try:
             requests.post('http://127.0.0.1:5000/add_chat',
                           json={'nickname_one': self.nick1, 'nickname_two': self.nick2})
