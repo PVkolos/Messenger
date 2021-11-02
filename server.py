@@ -23,6 +23,7 @@ def status():
 
 @app.route('/send', methods=['POST'])
 def send_m():
+    """  отправка сообщений в общий чат  """
     data = request.json
     name = data['name']
     if not isinstance(data, dict):
@@ -46,6 +47,7 @@ def send_m():
 
 @app.route('/messages')
 def get_m():
+    """  получение всех сообщений, время отправки которых больше чем after  """
     try:
         after = float(request.args['after'])
     except Exception:
@@ -60,6 +62,7 @@ def get_m():
 
 @app.route('/users')
 def users():
+    """  получение списка всех пользователей мессенджера  """
     con = sqlite3.connect('DB/db1.sqlite')
     cur = con.cursor()
     result = cur.execute(f"""select name, password from users""").fetchall()
@@ -68,6 +71,7 @@ def users():
 
 @app.route('/add_user', methods=['POST'])
 def add_users():
+    """  добавление пользователя в мессенджер (т.е. в БД)  """
     data = request.json
     name = data['name']
     password = data['password']
@@ -90,6 +94,7 @@ def add_users():
 
 @app.route('/add_chat', methods=['POST'])
 def add_chat():
+    """  добавить личный чат на сервер (создание теблицы в БД с именем 'username1_username2')  """
     data = request.json
     nickname_one = data['nickname_one']
     nickname_two = data['nickname_two']
@@ -115,6 +120,7 @@ def add_chat():
 
 @app.route('/send_ch', methods=['POST'])
 def send_messege():
+    """   добавление личного сообщения между двумя пользователями. otpr - отправитель сообщения  """
     data = request.json
     name = data['name']
     if not isinstance(data, dict):
@@ -140,6 +146,7 @@ def send_messege():
 
 @app.route('/get_messages', methods=['GET', 'POST'])
 def get_message():
+    """  получение всех сообщений личного чата, время отправки которых больше чем after  """
     try:
         data = request.json
         name = data['name']
@@ -154,7 +161,6 @@ def get_message():
         con.close()
     except Exception:
         return
-
 
     return {'messages': res[:50]}
 
