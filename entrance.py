@@ -42,7 +42,12 @@ class Avtoriz(QMainWindow):
 
     def avt(self):
         """  вход в аккаунт, проверка данных на валидность и верность  """
-        r = requests.get(f'{URL}users')
+        try:
+            r = requests.get(f'{URL}users')
+        except Exception:
+            self.label_4.setText('Ошибка сервера, попробуйте позднее!')
+            self.label_4.setStyleSheet("QLabel { background-color: rgba(255, 0, 0, 140); }")
+            return
         for el in r.json()['users']:
             password = sha256(self.lineEdit_2.text().encode('utf-8')).hexdigest()
             if el[0] in self.lineEdit.text() and el[1] == password:
