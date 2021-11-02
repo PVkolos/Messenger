@@ -46,11 +46,14 @@ class Main(QMainWindow):
 
     def search(self):
         """   поиск пользователей  """
-        r = requests.get(f'{URL}users')
-        text = self.lineEdit.text()
-        for el in r.json()['users']:
-            if el[0] != self.name and text == el[0]:
-                self.new_w(text)
+        try:
+            r = requests.get(f'{URL}users')
+            text = self.lineEdit.text()
+            for el in r.json()['users']:
+                if el[0] != self.name and text == el[0]:
+                    self.new_w(text)
+        except Exception:
+            return
 
     def ck(self):
         self.new_w(self.sender().text())
