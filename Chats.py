@@ -11,6 +11,7 @@ from SETTINGS import URL
 
 class Chat(QMainWindow):
     def __init__(self, nm):
+        """  инициализация и настройка главного окна  """
         super().__init__()
         uic.loadUi('UI/chat.ui', self).setFixedSize(1158, 844)
         self.after = 0
@@ -27,6 +28,7 @@ class Chat(QMainWindow):
         self.pushButton_2.setIconSize(QSize(300, 300))
 
     def send(self):
+        """  отправка сообщений на сервер  """
         self.messege = self.textEdit_2.toPlainText()
         try:
             r = requests.post(f'{URL}send_ch',
@@ -44,6 +46,7 @@ class Chat(QMainWindow):
         self.textEdit_2.setText('')
 
     def get_mess(self):
+        """  поиск новых сообщений на сервере  """
         try:
             r = requests.get(f'{URL}get_messages?after={self.after}',
                              json={'name': self.nm})
@@ -58,6 +61,7 @@ class Chat(QMainWindow):
             print(e)
 
     def print_m(self, messages):
+        """  отрисовка новых сообщений с сервера  """
         try:
             for el in messages:
                 time = str(datetime.fromtimestamp(el[-1])).split()[1].split(':')
