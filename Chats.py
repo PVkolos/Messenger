@@ -9,7 +9,7 @@ import main
 class Chat(QMainWindow):
     def __init__(self, nm):
         super().__init__()
-        uic.loadUi('UI/chat.ui', self)
+        uic.loadUi('UI/chat.ui', self).setFixedSize(1158, 844)
         self.after = 0
         f = open('name.txt', 'r', encoding='utf8')
         self.nm = nm
