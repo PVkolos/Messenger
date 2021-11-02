@@ -14,7 +14,7 @@ name2 = ''
 class Main(QMainWindow):
     def __init__(self):
         super().__init__()
-        uic.loadUi('UI/main.ui', self)
+        uic.loadUi('UI/main.ui', self).setFixedSize(1567, 863)
         global name2
         self.after = 0
         self.chats = ['messeges']
