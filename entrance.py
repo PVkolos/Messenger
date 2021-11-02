@@ -17,11 +17,13 @@ class Avtoriz(QMainWindow):
         self.label_4.setAutoFillBackground(True)
 
     def reg(self):
+        """  регистрация пользователя в мессенджере  """
         try:
             r = requests.post(f'{URL}add_user',
                               json={'name': self.lineEdit_3.text(), 'password': self.lineEdit_4.text()})
-        except Exception as e:
-            print('Ошибка сервера, попробуйте позднее!', e)
+        except Exception:
+            self.label_3.setText('Ошибка сервера, попробуйте позднее!')
+            self.label_3.setStyleSheet("QLabel { background-color: rgba(255, 0, 0, 140); }")
             return
 
         if r.status_code == 500:
@@ -39,6 +41,7 @@ class Avtoriz(QMainWindow):
             self.hide()
 
     def avt(self):
+        """  вход в аккаунт, проверка данных на валидность и верность  """
         r = requests.get(f'{URL}users')
         for el in r.json()['users']:
             password = sha256(self.lineEdit_2.text().encode('utf-8')).hexdigest()
