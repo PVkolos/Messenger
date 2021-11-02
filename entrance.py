@@ -9,7 +9,7 @@ import main
 class Avtoriz(QMainWindow):
     def __init__(self):
         super().__init__()
-        uic.loadUi('UI/avt_reg.ui', self)
+        uic.loadUi('UI/avt_reg.ui', self).setFixedSize(1374, 866)
         self.pushButton.clicked.connect(self.reg)
         self.pushButton_2.clicked.connect(self.avt)
         self.label_3.setAutoFillBackground(True)
