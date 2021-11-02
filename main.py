@@ -16,6 +16,7 @@ name2 = ''
 
 class Main(QMainWindow):
     def __init__(self):
+        """  инициализация и настройка главного окна  """
         super().__init__()
         uic.loadUi('UI/main.ui', self).setFixedSize(1567, 863)
         global name2
@@ -40,15 +41,11 @@ class Main(QMainWindow):
                 self.btn.setGeometry(2, i, 300, 40)
                 self.btn.clicked.connect(self.ck)
                 i += 50
-                self.btn.setStyleSheet("""
-                        QWidget {
-                            border: 5px solid gray;
-                            border-radius: 10px;
-                            background-color: rgb(255, 255, 255);
-                            font-size: 25px;
-                            } """)
+                self.btn.setStyleSheet("""QWidget {border: 5px solid gray; border-radius: 10px; 
+                                            background-color: rgb(255, 255, 255); font-size: 25px;} """)
 
     def search(self):
+        """   поиск пользователей  """
         r = requests.get(f'{URL}users')
         text = self.lineEdit.text()
         for el in r.json()['users']:
@@ -59,6 +56,7 @@ class Main(QMainWindow):
         self.new_w(self.sender().text())
 
     def new_w(self, name):
+        """  открытие окна личного чата  """
         a = Messengers(name, self.name)
         a.newchat()
         f = open('Разное/name.txt', 'w')
@@ -71,6 +69,7 @@ class Main(QMainWindow):
         self.pr.show()
 
     def get_mess(self):
+        """  поиск новых сообщений на сервере  """
         try:
             r = requests.get(f'{URL}messages?after={self.after}')
         except Exception as e:
@@ -83,6 +82,7 @@ class Main(QMainWindow):
             print(e)
 
     def print_m(self, messages):
+        """  отрисовка новых сообщений с сервера  """
         try:
             for el in messages:
                 time = str(datetime.fromtimestamp(el[-1])).split()[1].split(':')
@@ -106,6 +106,7 @@ class Main(QMainWindow):
             print(e)
 
     def send(self):
+        """  отправка сообщений на сервер  """
         try:
             r = requests.post(f'{URL}send',
                               json={'text': self.textEdit.toPlainText(), 'name': self.name})
