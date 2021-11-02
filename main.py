@@ -3,6 +3,8 @@ import requests
 from datetime import datetime
 
 from PyQt5 import uic, QtCore
+from PyQt5.QtCore import QSize
+from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QMainWindow, QPushButton
 from PyQt5.QtWidgets import QApplication
 import entrance
@@ -17,12 +19,13 @@ class Main(QMainWindow):
         uic.loadUi('UI/main.ui', self).setFixedSize(1567, 863)
         global name2
         self.after = 0
-        self.chats = ['messeges']
         self.pushButton.clicked.connect(self.send)
         self.timer = QtCore.QTimer()
         self.timer.timeout.connect(self.get_mess)
         self.timer.start(1000)
         self.pushButton_2.clicked.connect(self.search)
+        self.pushButton.setIcon(QIcon('Снимок.PNG'))
+        self.pushButton.setIconSize(QSize(200, 200))
         f = open('name.txt', 'r', encoding='utf8')
         self.name = f.readline()
         f.close()
@@ -125,4 +128,3 @@ if __name__ == '__main__':
     ex = entrance.Avtoriz()
     ex.show()
     sys.exit(app.exec_())
-
