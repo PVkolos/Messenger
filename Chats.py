@@ -61,19 +61,36 @@ class Chat(QMainWindow):
             print(e)
 
     def print_m(self, messages):
-        """  отрисовка новых сообщений с сервера  """
+        """  отрисовка новых сообщений с сервера
+             ВНИМАНИЕ, внизу плохой код!
+        """
         try:
             for el in messages:
                 time = str(datetime.fromtimestamp(el[-1])).split()[1].split(':')
                 if el[0] == main.name2:
-                    self.textBrowser.append('\t\t\t\t\t\t\t\t\t' + time[0] + ':' + time[1])
-                    self.textBrowser.append('\t\t\t\t\t\t\t\t\t' + el[1])
-                    self.textBrowser.append('')
+                    j = 40
+                    self.textBrowser.append('\t\t\t\t\t\t\t' + time[0] + ':' + time[1])
+                    for i in range(0, len(el[1]), 40):
+                        if '\n' in el[1][i:j]:
+                            el2 = el[1].split('\n')
+                            for k in range(len(el2)):
+                                if el2[k]:
+                                    m = 40
+                                    for n in range(0, len(el2[k]), 40):
+                                        self.textBrowser.append('\t\t\t\t\t\t' + el2[k][n:m])
+                                        m += 40
+                        else:
+                            self.textBrowser.append('\t\t\t\t\t\t' + el[1][i:j])
+                            j += 40
                     self.after = el[-1]
+
                 else:
                     self.textBrowser.append(time[0] + ':' + time[1])
-                    self.textBrowser.append(str(el[1]))
-                    self.textBrowser.append('')
+                    j = 35
+                    for i in range(0, len(el[1]), 35):
+                        self.textBrowser.append((el[1][i:j]).rstrip())
+                        j += 40
                     self.after = el[-1]
+                self.textBrowser.append('')
         except Exception as e:
             print(e)
