@@ -9,4 +9,3 @@ Messenger for Pyhon
 
 Далее, запустите интерфейс, командой python main.py
 
-492 сторки кода
