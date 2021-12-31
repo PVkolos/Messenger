@@ -10,9 +10,10 @@ from PyQt5.QtWidgets import QApplication
 import entrance
 from New_Messenger import Messengers
 from SETTINGS import URL
-import Chats
+from Chats import Chat
 from info import Info
-name2 = ''
+from settuser import Set
+id2 = ''
 
 
 class Main(QMainWindow):
@@ -20,7 +21,7 @@ class Main(QMainWindow):
         """  инициализация и настройка главного окна  """
         super().__init__()
         uic.loadUi('UI/main.ui', self).setFixedSize(1567, 863)
-        global name2
+        global id2
         self.after = 0
         self.pushButton.clicked.connect(self.send)
         self.timer = QtCore.QTimer()
@@ -30,15 +31,19 @@ class Main(QMainWindow):
         self.pushButton.setIcon(QIcon('Разное/Снимок.PNG'))
         self.pushButton.setIconSize(QSize(200, 200))
         self.pushButton_3.clicked.connect(self.info)
+        self.pushButton_4.clicked.connect(self.set)
         f = open('Разное/name.txt', 'r', encoding='utf8')
-        self.name = f.readline()
+        self.id = f.readline()
         f.close()
-        name2 = self.name
-        self.label_2.setText(self.name)
+        id2 = self.id
+        r = requests.get(f'{URL}users')
+        for el in r.json()['users']:
+            if str(el[2]) == self.id:
+                self.label_2.setText(el[0])
         r = requests.get(f'{URL}users')
         i = 230
         for el in r.json()['users']:
-            if el[0] != self.name:
+            if str(el[2]) != self.id:
                 self.btn = QPushButton(el[0], self)
                 self.btn.setGeometry(10, i, 300, 40)
                 self.btn.clicked.connect(self.ck)
@@ -50,36 +55,54 @@ class Main(QMainWindow):
         self.pr = Info()
         self.pr.show()
 
+    def set(self):
+        self.pr = Set()
+        self.pr.show()
+
     def search(self):
         """   поиск пользователей  """
         try:
             r = requests.get(f'{URL}users')
             text = self.lineEdit.text()
             for el in r.json()['users']:
-                if el[0] != self.name and text == el[0]:
-                    self.new_w(text)
+                if str(el[2]) != self.id and text == el[0]:
+                    self.new_w(str(el[2]))
         except Exception as e:
             print(e)
             return
 
     def ck(self):
-        self.new_w(self.sender().text())
+        try:
+            r = requests.get(f'{URL}users')
+            for el in r.json()['users']:
+                if self.sender().text() == el[0]:
+                    self.new_w(str(el[2]))
+        except Exception as e:
+            print(e, 111)
+            return
 
-    def new_w(self, name):
+    def new_w(self, id):
         """  открытие окна личного чата  """
-        a = Messengers(name, self.name)
+        a = Messengers(id, self.id)
         a.newchat()
         f = open('Разное/name.txt', 'w')
-        f.write(name)
+        f.write(id)
         f.close()
-        self.lis = [name, self.name]
+        self.lis = [id, self.id]
         self.lis.sort()
-        name = self.lis[0] + self.lis[1]
-        self.pr = Chats.Chat(name)
+        nm = f'{self.lis[0]}_{self.lis[1]}'
+        self.pr = Chat(nm)
         self.pr.show()
 
     def get_mess(self):
         """  поиск новых сообщений на сервере  """
+        try:
+            r = requests.get(f'{URL}users')
+            for el in r.json()['users']:
+                if str(el[2]) == self.id:
+                    self.label_2.setText(el[0])
+        except:
+            pass
         try:
             r = requests.get(f'{URL}messages?after={self.after}')
         except Exception as e:
@@ -98,7 +121,7 @@ class Main(QMainWindow):
         try:
             for el in messages:
                 time = str(datetime.fromtimestamp(el[-1])).split()[1].split(':')
-                if el[1] == self.name:
+                if str(el[1]) == self.id:
                     j = 40
                     self.textBrowser.append('\t\t\t\t\t\t' + time[0] + ':' + time[1])
                     for i in range(0, len(el[2]), 40):
@@ -116,7 +139,12 @@ class Main(QMainWindow):
                     self.after = el[-1]
 
                 else:
-                    self.textBrowser.append(el[1] + ' ' + time[0] + ':' + time[1])
+                    name = ''
+                    r = requests.get(f'{URL}users')
+                    for user in r.json()['users']:
+                        if user[2] == el[1]:
+                            name = user[0]
+                    self.textBrowser.append(name + ' ' + time[0] + ':' + time[1])
                     j = 35
                     for i in range(0, len(el[2]), 35):
                         self.textBrowser.append((el[2][i:j]).rstrip())
@@ -124,13 +152,18 @@ class Main(QMainWindow):
                     self.after = el[-1]
                 self.textBrowser.append('')
         except Exception as e:
-            print(e)
+            print(e, 123)
 
     def send(self):
         """  отправка сообщений на сервер  """
         try:
+            name = ''
+            r = requests.get(f'{URL}users')
+            for el in r.json()['users']:
+                if str(el[2]) == self.id:
+                    name = el[2]
             r = requests.post(f'{URL}send',
-                              json={'text': self.textEdit.toPlainText(), 'name': self.name})
+                              json={'text': self.textEdit.toPlainText(), 'name': str(name)})
         except Exception as e:
             self.textBrowser.append('Ошибка сервера, попробуйте позднее!')
             self.textBrowser.append('')
