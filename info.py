@@ -15,7 +15,7 @@ class Info(QMainWindow):
             r = requests.get(f'{URL}users')
         except Exception:
             return
-        self.label_5.setText(str(r.json()['users'][-1][-1]))
+        self.label_5.setText(str(r.json()['users'][-1][-2]))
         try:
             r = requests.get(f'{URL}status')
         except Exception:
