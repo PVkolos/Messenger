@@ -65,7 +65,33 @@ def users():
     """  получение списка всех пользователей мессенджера  """
     con = sqlite3.connect('DB/db1.sqlite')
     cur = con.cursor()
-    result = cur.execute(f"""select name, password, id from users""").fetchall()
+    result = cur.execute(f"""select name, password, id, path from users""").fetchall()
+    return {'users': result}
+
+
+@app.route('/insert_users')
+def insert_users():
+    """  иземенение данных пользователей мессенджера  """
+    data = request.json
+    name = data['name']
+    path = ''
+    name2 = ''
+    try:
+        path = data['path']
+    except Exception:
+        name2 = data['name2']
+    con = sqlite3.connect('DB/db1.sqlite')
+    cur = con.cursor()
+    if path:
+        result = cur.execute(f"""UPDATE users
+                        SET path = '{path}'
+                        WHERE name = '{name}'""").fetchall()
+    elif name2:
+        result = cur.execute(f"""UPDATE users
+                        SET name = '{name2}'
+                        WHERE name = '{name}'""").fetchall()
+    con.commit()
+    con.close()
     return {'users': result}
 
 
@@ -75,6 +101,7 @@ def add_users():
     data = request.json
     name = data['name']
     password = data['password']
+    path = data['path']
     if not name or not password:
         abort(400)
     con = sqlite3.connect('DB/db1.sqlite')
@@ -83,7 +110,7 @@ def add_users():
     if not result:
         password = sha256(password.encode('utf-8')).hexdigest()
         cur.execute(
-            f"""INSERT INTO users(name, password) VALUES('{name}', '{password}')""").fetchall()
+            f"""INSERT INTO users(name, password, path) VALUES('{name}', '{password}', '{path}')""").fetchall()
         con.commit()
         con.close()
     else:
@@ -96,23 +123,25 @@ def add_users():
 def add_chat():
     """  добавить личный чат на сервер (создание теблицы в БД с именем 'username1_username2')  """
     data = request.json
-    nickname_one = data['nickname_one']
-    nickname_two = data['nickname_two']
-    if not nickname_one or not nickname_two:
+    id_one = data['id_one']
+    id_two = data['id_two']
+    if not id_one or not id_two:
         abort(400)
-    lis = [nickname_one, nickname_two]
+    lis = [id_one, id_two]
     con = sqlite3.connect('DB/chats.sqlite')
     cur = con.cursor()
     lis.sort()
-    name = lis[0] + lis[1]
+    name = f'{lis[0]}_{lis[1]}'
+    print(name)
     try:
-        cur.execute(f"""CREATE TABLE {name} (
+        cur.execute(f"""CREATE TABLE '{name}' (
                                     id      INTEGER PRIMARY KEY AUTOINCREMENT,
                                     otpr    STRING,
                                     messege STRING,
                                     time    STRING);""").fetchall()
         con.commit()
         con.close()
+        print('okkk')
         return {'ok': True}
     except Exception:
         abort(400)
@@ -137,7 +166,7 @@ def send_messege():
     con = sqlite3.connect('DB/chats.sqlite')
     cur = con.cursor()
     cur.execute(
-        f"""INSERT INTO {name}(otpr, messege, time) VALUES('{otpr}', '{messege}', '{time.time()}')""").fetchall()
+        f"""INSERT INTO '{name}'(otpr, messege, time) VALUES('{otpr}', '{messege}', '{time.time()}')""").fetchall()
     con.commit()
     con.close()
 
@@ -157,9 +186,10 @@ def get_message():
         con = sqlite3.connect('DB/chats.sqlite')
         cur = con.cursor()
         res = cur.execute(
-            f"""select otpr, messege, time from {name} where time > {after}""").fetchall()
+            f"""select otpr, messege, time from '{name}' where time > {after}""").fetchall()
         con.close()
-    except Exception:
+    except Exception as e:
+        print(e)
         return
 
     return {'messages': res[:50]}
