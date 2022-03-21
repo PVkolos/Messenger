@@ -7,5 +7,5 @@ Messenger for Pyhon
 
 Запустите сервер командой python server.py
 
-Далее, запустите интерфейс, командой python main.py
+Далее, в другой консоли, запустите интерфейс, командой python main.py
 
